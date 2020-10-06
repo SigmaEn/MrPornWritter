@@ -1,0 +1,138 @@
+﻿
+@page "/"
+@inject HttpClient Http
+@using MatBlazor
+<h1>My Scripts</h1>
+
+@*<p>This component demonstrates fetching data from the server.</p>*@
+
+@if (forecasts == null)
+{
+    <p><em>error...</em></p>
+}
+else
+{
+    @*<table class="otable">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Temp. (C)</th>
+                    <th>Temp. (F)</th>
+                    <th>Summary</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var forecast in forecasts)
+                {
+                    <tr>
+                        <td>@forecast.Date.ToShortDateString()</td>
+                        <td>@forecast.TemperatureC</td>
+                        <td>@forecast.TemperatureF</td>
+                        <td>@forecast.Summary</td>
+                    </tr>
+                }
+            </tbody>
+        </table>*@
+
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Fills</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var script in scripts)
+            {
+                <tr>
+                    <td><a href="@script.Link">@script.Title</a> </td>
+                    <td>@script.Description</td>
+                    <td>None</td>
+
+                </tr>
+            }
+        </tbody>
+    </table>
+
+
+
+    @*<MatTable Items="@scripts" class="mat-elevation-z5">
+            <MatTableHeader>
+                <th>Title</th>
+                <th>Description</th>
+                <th>Link</th>
+                <th>Fills</th>
+            </MatTableHeader>
+
+            <MatTableRow>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td>@context.Title</td>
+            <td>@context.Description</td>
+            <td>@context.Link</td>
+            <td>@(context.Fills.Count()>0?"None": context.Fills.Count() + " Scripts")</td>
+
+            </MatTableRow>
+        </MatTable>*@
+
+
+
+}
+
+@code {
+    private WeatherForecast[] forecasts;
+
+    private Script[] scripts;
+
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            forecasts = await Http.GetFromJsonAsync<WeatherForecast[]>("sample-data/weather.json");
+            scripts = await Http.GetFromJsonAsync<Script[]>("sample-data/scripts.json");
+
+        }
+        catch (Exception Ex)
+        {
+
+        }
+    }
+
+    public class WeatherForecast
+    {
+        public DateTime Date { get; set; }
+
+        public int TemperatureC { get; set; }
+
+        public string Summary { get; set; }
+
+        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+    }
+
+    public class Script
+    {
+
+        public string Title { get; set; }
+
+        public string Description { get; set; }
+
+        public FIll[] Fills { get; set; }
+
+        public Uri Link { get; set; }
+
+    }
+
+    public class FIll
+    {
+        Uri Link;
+        string VoicedBy;
+    }
+
+
+
+}
